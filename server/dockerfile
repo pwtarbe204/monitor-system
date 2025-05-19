@@ -1,0 +1,13 @@
+FROM ubuntu
+
+WORKDIR /server
+
+RUN apt-get update
+RUN apt-get -y install python3
+RUN apt-get -y install python3-flask
+RUN apt-get -y install python3-pyodbc
+RUN apt-get -y install python3-dotenv
+
+COPY /config ./config
+COPY /controller ./controller
+COPY app.py ./app.py

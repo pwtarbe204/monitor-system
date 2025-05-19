@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Live Network Speed Chart</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+
+    #myChart {
+      max-width: 700px;
+    }
+
+    .cycleChart {
+      display: flex;
+    }
+
+    .chart-container {
+      width: 100%;
+      max-width: 700px;
+      /* Độ rộng tối đa của biểu đồ */
+      height: 400px;
+      /* Chiều cao cố định */
+      margin: auto;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      /* Căn giữa theo chiều ngang */
+      justify-content: center;
+      /* Căn giữa theo chiều dọc nếu cần */
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="chart-container">
+      <canvas id="myChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="myChart2"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="myChart3"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="myChart4"></canvas>
+    </div>
+  </div>
+
+
+  <a href="/groups">Go back</a>
+
+ <script>
+  let chart, chart_2, chart_3, chart_4;
+
+  function initChart() {
+    const ctx   = document.getElementById('myChart').getContext('2d');
+    const ctx_2 = document.getElementById('myChart2').getContext('2d');
+    const ctx_3 = document.getElementById('myChart3').getContext('2d');
+    const ctx_4 = document.getElementById('myChart4').getContext('2d');
+
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: { labels: [], datasets: [
+        { label: 'Download (Mbps)', data: [], borderColor: 'green', backgroundColor:'rgba(0, 255, 0, 0.2)', fill: true },
+        { label: 'Upload (Mbps)', data: [], borderColor: 'red', backgroundColor:'rgba(255, 0, 0, 0.2)', fill: true }
+      ] },
+      options: { responsive: true, scales: { x: { title: { display: true, text: 'Time' } }, y: { title: { display: true, text: 'Mbps' } } } }
+    });
+
+    chart_2 = new Chart(ctx_2, {
+      type: 'bar',
+      data: { labels: [], datasets: [
+        { label: 'Packet In', data: [], backgroundColor: 'rgba(0, 0, 255, 0.6)' },
+        { label: 'Packet Out', data: [], backgroundColor: 'rgba(255, 165, 0, 0.6)' }
+      ] },
+      options: { responsive: true, scales: { x: { title: { display: true, text: 'Time' } }, y: { beginAtZero: true } } }
+    });
+
+    chart_3 = new Chart(ctx_3, {
+      type: 'line',
+      data: { labels: [], datasets: [
+          { 
+            label: 'RAM Usage (%)', data: [], borderColor: 'green', backgroundColor: 'rgba(0, 255, 0, 0.2)', fill: true 
+          }
+        ]
+      },
+      options: { responsive: true,scales: { x: { title: { display: true, text: 'Time' } }, y: { title: { display: true, text: 'Percentage (%)' },min: 0,max: 100, ticks: {stepSize: 10, // Chia nhỏ mỗi 10%
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+        }}
+      }
+    });
+
+    chart_4= new Chart(ctx_4, {
+      type: 'line',
+      data: { labels: [], datasets: [
+          { 
+            label: 'CPU Usage (%)', data: [], borderColor: 'blue', backgroundColor: 'rgba(0, 0, 255, 0.1)', fill: true 
+          }
+        ]
+      },
+      options: { responsive: true,scales: { x: { title: { display: true, text: 'Time' } }, y: { title: { display: true, text: 'Percentage (%)' },min: 0,max: 100, ticks: {stepSize: 10, // Chia nhỏ mỗi 10%
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+        }}
+      }
+    });
+
+
+  }
+
+  async function updateChart() {
+    try {
+      const id = {{ id }};
+      const res = await fetch('/api/chart-data/' + id);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      const sliceStart = Math.max(data.time.length - 5);
+
+      const labels = data.time.slice(sliceStart).map(ts => new Date(ts).toLocaleTimeString());
+
+      chart.data.labels = labels;
+      chart.data.datasets[0].data = data.download.slice(sliceStart);
+      chart.data.datasets[1].data = data.upload.slice(sliceStart);
+      chart.update();
+
+      chart_2.data.labels = labels;
+      chart_2.data.datasets[0].data = data.packet_recv.slice(sliceStart);
+      chart_2.data.datasets[1].data = data.packet_sent.slice(sliceStart);
+      chart_2.update();
+
+      chart_3.data.labels = labels;
+      chart_3.data.datasets[0].data = data.ram.slice(sliceStart);
+      chart_3.update();
+
+      chart_4.data.labels = labels;
+      chart_4.data.datasets[0].data = data.cpu.slice(sliceStart);
+      chart_4.update();
+
+    } catch (err) {
+      console.error('Error updating chart:', err);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initChart();
+    updateChart();
+    setInterval(updateChart, 5000);
+  });
+</script>
+
+</body>
+
+</html>

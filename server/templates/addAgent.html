@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quản lý phòng lab</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .lab-form,
+        .computer-form {
+            margin-bottom: 30px;
+        }
+
+        input,
+        select {
+            padding: 5px;
+            margin: 5px 0;
+            width: 200px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+        p {
+            color: rgb(29, 179, 59);
+        }
+        .text {
+            color: rgb(29, 179, 59);
+            text-align: center;
+        }
+        .text a {
+            color: red;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <a href="/groups">Go back</a>
+    <div class="lab-form">
+        <h2>Thông tin</h2>
+        <form action="/create_group" method="POST">
+            <label for="labName">Tên phòng lab:</label><br>
+            <input type="text" id="labName" name="groupname" required><br>
+            <label for="description">Địa điểm:</label><br>
+            <input type="text" name="location"> <br>
+            <button type="submit">Thay đổi</button>
+        </form>
+    </div>
+    <h2>Thêm Agent</h2>
+    <table id="labsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Agent Name</th>
+                <th>Hostname</th>
+                <th>IP</th>
+                <th>OS</th>
+                <th>Agent Status</th>
+                <th>Group ID</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for agent in agents %}
+            {% if agent[7] == 0 %}
+            <tr>
+                <td>{{ agent[0] }}</td>
+                <td>{{ agent[1] }}</td>
+                <td>{{ agent[2] }}</td>
+                <td>{{ agent[3] }}</td>
+                <td>{{ agent[4] }}</td>
+                <td>{{ agent[5] }}</td>
+                <td>{{ agent[6] }}</td>
+                <td class="text"><a href="/groups/{{ id }}/{{ agent[0] }}">+ Add</a></td>
+                <td><a href="">View</a></td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+    <h2>Danh Sách Agents</h2>
+    <table id="labsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Agent Name</th>
+                <th>Hostname</th>
+                <th>IP</th>
+                <th>OS</th>
+                <th>Agent Status</th>
+                <th>Group ID</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for agent in agent_of_id %}
+            <tr>
+                <td>{{ agent[0] }}</td>
+                <td>{{ agent[1] }}</td>
+                <td>{{ agent[2] }}</td>
+                <td>{{ agent[3] }}</td>
+                <td>{{ agent[4] }}</td>
+                <td>{{ agent[5] }}</td>
+                <td>{{ agent[6] }}</td>
+                <td><a href="/chart/{{ agent[0] }}">View</a></td>
+                <td><a href="/groups/addagent/delete/{{ id }}/{{ agent[0] }}"><i class= "fa fa-solid fa-trash"></i></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        // Ví dụ: JS để load phòng lab vào select và bảng
+        // Đây bạn sẽ gọi API lấy dữ liệu phòng lab từ server (Flask, NodeJS, v.v)
+    </script>
+
+</body>
+
+</html>

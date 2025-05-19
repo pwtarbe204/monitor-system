@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quản lý phòng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .lab-form,
+        .computer-form {
+            margin-bottom: 30px;
+        }
+
+        input,
+        select {
+            padding: 5px;
+            margin: 5px 0;
+            width: 200px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+
+    <h1>Quản lý phòng</h1>
+
+    <div class="lab-form">
+        <h2>Tạo phòng lab mới</h2>
+        <form action="/create_group" method="POST">
+            <label for="labName">Tên phòng lab:</label><br>
+            <input type="text" id="labName" name="groupname" required><br>
+            <label for="description">Địa điểm:</label><br>
+            <input type="text" name="location"> <br>
+            <button type="submit">Tạo phòng lab</button>
+        </form>
+    </div>
+
+    <h2>Danh sách phòng lab</h2>
+    <table id="labsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên phòng lab</th>
+                <th>Địa điểm</th>
+                <th>View</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for group in groups %}
+            <tr>
+                <td>{{ group[0] }}</td>
+                <td>{{ group[1] }}</td>
+                <td>{{ group[2] }}</td>
+                <td><a href="/groups/addagent/{{ group[0] }}">Settings</a></td>
+                <td><a href="/groups/{{ group[0] }}"><i class= "fa fa-solid fa-trash"></i></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        // Ví dụ: JS để load phòng lab vào select và bảng
+        // Đây bạn sẽ gọi API lấy dữ liệu phòng lab từ server (Flask, NodeJS, v.v)
+    </script>
+
+</body>
+
+</html>
